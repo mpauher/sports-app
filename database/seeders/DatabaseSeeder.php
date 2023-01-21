@@ -20,10 +20,10 @@ class DatabaseSeeder extends Seeder
         \App\Models\Team::factory(10)->create();
         \App\Models\Player::factory(10)->create();
         \App\Models\Trainer::factory(10)->create();
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+
+        $this->call([
+            PermissionSeeder::class,
+        ]);
 
 
     }
