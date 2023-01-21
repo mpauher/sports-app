@@ -19,7 +19,7 @@ class PositionFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->name(),
+            'name' => $this->faker->jobTitle(),
             'description' => $this->faker->text(),
             'sport_id' => Sport::all()->random()->id,
         ];

@@ -20,7 +20,7 @@ class TeamFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->name(),
+            'name' => $this->faker->team,
             'sport_id' => Sport::all()->random()->id,
             'trainer_id' => Trainer::factory()->create()->id,
             'user_id' => User::all()->random()->id
