@@ -19,11 +19,13 @@ class UserController extends Controller
                 'password' =>'required|string',
             ]);
 
-            User::create([
+            $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
             ]);
+
+            $user->assignRole('manager');
 
             return response()->json([
                'message' =>'Usuario creado exitosamente'
@@ -55,8 +57,6 @@ class UserController extends Controller
 
         return response()->json(['message' => 'Successfully logged out']);
     }
-
-    
 
     public function getAuthenticatedUser()
     {
