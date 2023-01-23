@@ -14,9 +14,10 @@ return new class extends Migration
     public function up()
     {
         Schema::create('teams', function (Blueprint $table) {
+            // $table->unique(['user_id']);
             $table->id();
             $table->string('name');
-            $table->double('average')->nullable();
+            // $table->double('average')->nullable();
             $table->foreignId('sport_id')->constrained('sports')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('trainer_id')->constrained('trainers')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade')->onUpdate('cascade');
