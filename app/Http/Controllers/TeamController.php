@@ -36,31 +36,43 @@ class TeamController extends Controller
             $request->validate([
             'name'=>'required|string',
             'sport_id'=>'required|integer',
-            'trainer_id'=>'required|integer',
+            'trainer_id'=>'required|integer'
             ]);
 
             $user = auth()->user();
-            $teams = Team::all();
+            if($user->hasRole('admin')){
+                $request->validate([
+                    'user_id'=>'required|integer',
+                ]);
 
-            foreach ($teams as $team) {
-                if (($user->hasRole('manager')) && ($team->user_id == $user->id)){
-                    // dd(auth()->user()->hasRole('manager'));
+                Team::create([
+                    'name'=>$request->name,
+                    'sport_id'=>$request->sport_id,
+                    'trainer_id'=>$request->trainer_id
+                ]);
+                
+            }else if($user->hasRole('manager')){
+                $team = Team::where('user_id',$user->id)->first();
+
+                if (! $team){
+                    Team::create([
+                        'name'=>$request->name,
+                        'sport_id'=>$request->sport_id,
+                        'trainer_id'=>$request->trainer_id,
+                        'user_id'=>$user->id
+                    ]);
+                    
+                }else{
                     return response()->json([
                         'message'=>'Manager already has a team'
-                    ]);
+                    ], 403);
                 }
-            }  
-
-            $teams = Team::create([
-            'name'=>$request->name,
-            'sport_id'=>$request->sport_id,
-            'trainer_id'=>$request->trainer_id,
-            'user_id'=>$user->id,
-            ]);
-
+            }
+             
             return response()->json([
                 'message'=>'Team created successfully'
-            ]);
+            ],200);
+            
         }catch ( \Exception $e){
             return response()->json([
                 'error' => $e->getMessage()
@@ -71,7 +83,7 @@ class TeamController extends Controller
     public function update($id, Request $request){
         try{
             // dd(auth()->user()->id);
-            $user_id = auth()->user()->id;
+            $user = auth()->user();
             $team = Team::find($id);
 
             if(!$team){
@@ -80,17 +92,16 @@ class TeamController extends Controller
                 ],404);
             } 
             
-            if($user_id == $team->id){
+            if($user->id == $team->id || $user->hasRole('admin')){
                 $team->update($request->all());
+                return response()->json([
+                    'message' => 'Team update succesfully',
+                ],200);
             } else {
                 return response()->json([
-                    'message'=>'Only manager can edit'
-                ],404);
+                    'message'=>'Manager only can edit his team'
+                ],403);
             }
-
-            return response()->json([
-                'message' => 'Team update succesfully',
-            ],200);
         }catch ( \Exception $e){
             return response()->json([
                 'error' => $e->getMessage()
